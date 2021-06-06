@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="goToSignUp">"Create an acount "</string>
+    <string name="register">register</string>
+    <string name="goTologinin">Arleady have an acount</string>
+    <string name="edit_profile">Edit profile</string>
+    <string name="action_settings">setting</string>
+    <string name="Logout">Logout</string>
+    <string name="updateButton">UPDATE</string>
+</resources>
