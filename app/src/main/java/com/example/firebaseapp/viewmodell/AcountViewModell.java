@@ -42,14 +42,19 @@ public class AcountViewModell extends BaseViewModell {
     StorageReference storageReference;
 
     private final int PICK_IMAGE_REQUEST = 71;
-Post post;
-Profile profile ;
+    Post post;
+    Profile profile ;
     private FirebaseAuth mAuth;
     DatabaseReference databaseReference;
 
     public MutableLiveData<List> getPostsMutableLiveData = new MutableLiveData<>();
     public LiveData<List> getPostsLiveData() {
         return getPostsMutableLiveData;
+    }
+
+    public MutableLiveData<String> getImageUriMutableLiveData = new MutableLiveData<>();
+    public LiveData<String > getImageUriLiveData() {
+        return getImageUriMutableLiveData;
     }
 
     public MutableLiveData<String > updateProfileMutableLiveData = new MutableLiveData<>();
@@ -86,6 +91,7 @@ Profile profile ;
     public LiveData<String> observepostAdded() {
         return addPostLivaData;
     }
+
     public AcountViewModell() {
 
     }
@@ -99,7 +105,6 @@ Profile profile ;
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Log.d("isSuccessful", "createUserWithEmail:success");
-//                            FirebaseUser user = mAuth.getCurrentUser();
                             String userId = task.getResult().getUser().getUid();
                             userIdLiveData.setValue(userId);
                         } else {
@@ -234,16 +239,17 @@ Profile profile ;
     //get user name
     public void getuserName(String userId){
         profile =new Profile();
-        List<Profile> userList = new ArrayList<>();
+      //  List<Profile> userList = new ArrayList<>();
         databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                userList.clear();
+               // userList.clear();
                     profile = snapshot.getValue(Profile.class);
-                    userList.add(profile);
-                    getUserNameMutableLiveData.postValue(userList.get(0).getUserName());
-                    Log.e("getuserName", "userName: "+userList.get(0).getUserName());
+                 //   userList.add(profile);
+                    getUserNameMutableLiveData.postValue(profile.getUserName() );
+                    getImageUriMutableLiveData.postValue(profile.getUserImage());
+                   // Log.e("getuserName", "userName: "+userList.get(0).getUserName());
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
@@ -251,6 +257,7 @@ Profile profile ;
             }
         });
     }
+    //upload image
     public void uploadImage(Context context ,Uri filePath ) {
 
         SharedPreferences prefs = context.getSharedPreferences("MyUID",MODE_PRIVATE);
@@ -288,6 +295,7 @@ Profile profile ;
             });
         }
     }
+    //add image url inside userId
     public void imageUrl(Context context ,String uri){
     SharedPreferences prefs = context.getSharedPreferences("MyUID",MODE_PRIVATE);
     databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(prefs.getString("userId","")).child("userImage");

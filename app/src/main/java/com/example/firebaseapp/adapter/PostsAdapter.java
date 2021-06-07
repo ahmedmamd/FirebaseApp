@@ -48,6 +48,12 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostsViewHol
             postsList.get(position).setUserName(userName);
             holder.binding.setPosts(postsList.get(position));
         });
+        acountViewModell.getImageUriLiveData().observe((LifecycleOwner) context, userImage -> {
+            if (userImage == null || userImage.isEmpty()){
+                return;
+            }
+            postsList.get(position).setImageUri(userImage);
+        });
     }
 
     @Override

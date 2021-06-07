@@ -2,7 +2,15 @@ package com.example.firebaseapp.modell;
 
 public class Post {
 
-    String id,details,userId,userName;
+    String id,details,userId,userName ,imageUri;
+
+    public String getImageUri() {
+        return imageUri;
+    }
+
+    public void setImageUri(String imageUri) {
+        this.imageUri = imageUri;
+    }
 
     public String getUserName() {
         return userName;
