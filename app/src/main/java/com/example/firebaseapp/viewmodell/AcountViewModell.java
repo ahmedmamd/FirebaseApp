@@ -3,10 +3,8 @@ package com.example.firebaseapp.viewmodell;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -34,10 +32,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
-import static androidx.core.app.ActivityCompat.startActivityForResult;
 
 public class AcountViewModell extends BaseViewModell {
-//Context context;
+
     FirebaseStorage storage;
     StorageReference storageReference;
 
@@ -50,6 +47,11 @@ public class AcountViewModell extends BaseViewModell {
     public MutableLiveData<List> getPostsMutableLiveData = new MutableLiveData<>();
     public LiveData<List> getPostsLiveData() {
         return getPostsMutableLiveData;
+    }
+
+    public MutableLiveData<String> addImagesMutableLiveData = new MutableLiveData<>();
+    public LiveData<String>  addImagesLiveData() {
+        return addImagesMutableLiveData;
     }
 
     public MutableLiveData<String> getImageUriMutableLiveData = new MutableLiveData<>();
@@ -160,13 +162,14 @@ public class AcountViewModell extends BaseViewModell {
 
     }
     //add post
-    public void  addPost(Context context , String setpost ){
+    public void  addPost(Context context , String setpost ,List<String> uriImages){
         SharedPreferences prefs = context.getSharedPreferences("MyUID",MODE_PRIVATE);
         databaseReference = FirebaseDatabase.getInstance().getReference().child("Posts").push();
         post = new Post();
         post.setId(databaseReference.getKey());
         post.setDetails(setpost);
         post.setUserId(prefs.getString("userId",""));
+        post.setUriImage(uriImages);
         Log.d("addPost", "add post successFully with UID");
         databaseReference.setValue(post).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
@@ -236,20 +239,16 @@ public class AcountViewModell extends BaseViewModell {
             }
         });
     }
-    //get user name
+    //get user name and and user Image
     public void getuserName(String userId){
         profile =new Profile();
-      //  List<Profile> userList = new ArrayList<>();
         databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-               // userList.clear();
                     profile = snapshot.getValue(Profile.class);
-                 //   userList.add(profile);
-                    getUserNameMutableLiveData.postValue(profile.getUserName() );
+                    getUserNameMutableLiveData.postValue(profile.getUserName());
                     getImageUriMutableLiveData.postValue(profile.getUserImage());
-                   // Log.e("getuserName", "userName: "+userList.get(0).getUserName());
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
@@ -259,12 +258,12 @@ public class AcountViewModell extends BaseViewModell {
     }
     //upload image
     public void uploadImage(Context context ,Uri filePath ) {
-
         SharedPreferences prefs = context.getSharedPreferences("MyUID",MODE_PRIVATE);
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
         if(filePath != null)
         {
+            Log.e("uploadImage", filePath.toString() );
             final ProgressDialog progressDialog = new ProgressDialog(context);
             progressDialog.setTitle("Uploading...");
             progressDialog.show();
@@ -311,5 +310,42 @@ public class AcountViewModell extends BaseViewModell {
         }
     });
 }
+
+    public void uploadMultiImage(Context context ,Uri filePath ) {
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference();
+        if(filePath != null)
+        {
+            final ProgressDialog progressDialog = new ProgressDialog(context);
+            progressDialog.setTitle("Uploading...");
+            progressDialog.show();
+
+            StorageReference ref = storageReference.child("Images").child(""+System.currentTimeMillis());
+            ref.putFile(filePath).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
+                    progressDialog.dismiss();
+                    Log.e("upload ", "success" );
+                    // Continue with the task to get the download URL
+                    return ref.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task){
+                    if (task.isSuccessful()) {
+                        Uri downloadUri = task.getResult();
+                        Log.e("downloadUri", downloadUri.toString());
+                        addImagesMutableLiveData.postValue(downloadUri.toString());
+                    } else {
+                        Log.e("getDownloadUrl", "failed to get Url" );
+                    }
+                }
+            });
+        }
+    }
+
 }
 

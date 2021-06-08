@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.firebaseapp.R;
@@ -23,6 +24,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostsViewHol
     Context context;
     List<Post> postsList;
     AcountViewModell acountViewModell;
+    ImageAdapter imageAdapter;
 
     public PostsAdapter(Context context, List<Post> postsList) {
         this.context = context;
@@ -39,6 +41,11 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostsViewHol
 
     @Override
     public void onBindViewHolder(@NonNull PostsViewHolder holder, int position) {
+
+        imageAdapter =new ImageAdapter(context,postsList.get(position).getUriImage());
+        holder.binding.imgRec.setLayoutManager(new LinearLayoutManager(context,RecyclerView.HORIZONTAL,false));
+        holder.binding.imgRec.setAdapter(imageAdapter);
+
         acountViewModell = new AcountViewModell();
         acountViewModell.getuserName(postsList.get(position).getUserId());
         acountViewModell.getUseNameLiveData().observe((LifecycleOwner) context, userName -> {

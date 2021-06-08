@@ -26,7 +26,7 @@
                 android:layout_marginLeft="100dp"
                 android:layout_marginBottom="100dp"
                 android:padding="5dp"
-                android:text="@string/LoginHeader"
+                android:text="@string/register_page"
                 android:textSize="20sp" />
             <LinearLayout
                 android:layout_width="match_parent"
@@ -97,7 +97,8 @@
                 android:layout_margin="5dp"
                 android:drawablePadding="@dimen/_10sdp"
                 android:hint="enter your phone"
-                android:drawableLeft="@drawable/phone" />
+                android:drawableLeft="@drawable/phone"
+                android:inputType="number"/>
 
             <TextView
                 android:layout_width="146dp"

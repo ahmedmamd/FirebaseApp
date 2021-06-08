@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModelProvider;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -59,18 +58,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void forgetPassword() {
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        String emailAddress = binding.userEmail.getText().toString();
-
-        auth.sendPasswordResetEmail(emailAddress)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Log.d("forgetPassword", "Email sent.");
+        if (isEmailNotValid()){
+            Toast.makeText(MainActivity.this , "please enter your email " , Toast.LENGTH_SHORT).show();
+            return;
+        }else{
+            FirebaseAuth auth = FirebaseAuth.getInstance();
+            String emailAddress = binding.userEmail.getText().toString();
+            auth.sendPasswordResetEmail(emailAddress)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(MainActivity.this , "massage sent successfully " ,Toast.LENGTH_SHORT).show();
+                            }else
+                                Toast.makeText(MainActivity.this , "an error occurred " , Toast.LENGTH_SHORT).show();
                         }
-                    }
-                });
+                    });
+        }
+
     }
 
     private boolean isFormHasError() {
@@ -80,17 +85,28 @@ public class MainActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(email)){
             binding.userPassword.setError("please enter your email" );
             binding.userEmail.requestFocus();
-            binding.userEmail.setBackgroundResource(R.drawable.bordercolor);
+            binding.userEmail.setBackgroundResource(R.drawable.focus);
           return   isFormHasError = true ;
         } if (TextUtils.isEmpty(password)){
             binding.userPassword.setError("please enter your password" );
             binding.userPassword.requestFocus();
-            binding.userPassword.setBackgroundResource(R.drawable.bordercolor);
+            binding.userPassword.setBackgroundResource(R.drawable.focus);
            return isFormHasError = true;
         }
             return isFormHasError;
     }
 
+     private boolean isEmailNotValid(){
+         boolean isFormHasError = false;
+         email = binding.userEmail.getText().toString();
+         if (TextUtils.isEmpty(email)){
+             binding.userPassword.setError("please enter your email" );
+             binding.userEmail.requestFocus();
+             binding.userEmail.setBackgroundResource(R.drawable.focus);
+             return   isFormHasError = true ;
+         }
+             return isFormHasError;
+     }
     private void setUpObserver() {
         acountViewModell = new ViewModelProvider(this).get(AcountViewModell.class);
         acountViewModell.observeSignIn().observe(this ,  signIn -> {
@@ -101,7 +117,6 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                 }else
                     Toast.makeText(this , signIn , Toast.LENGTH_SHORT).show();
-
             }
         } );
     }

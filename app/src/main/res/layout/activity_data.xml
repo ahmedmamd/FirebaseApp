@@ -23,14 +23,27 @@
         android:layoutDirection="ltr"
         >
     </Toolbar>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layoutDirection="ltr">
         <EditText
             android:id="@+id/textPost"
-            android:layout_width="match_parent"
+            android:layout_weight="2"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="enter your posts"
             android:layout_margin="@dimen/_5sdp"
             />
-
+            <ImageView
+                android:layout_gravity="center"
+               android:id="@+id/list_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/select_images"
+                android:layout_marginRight="@dimen/_5sdp"/>
+    </LinearLayout>
         <Button
             android:id="@+id/addPostButton"
             android:layout_width="match_parent"

@@ -70,4 +70,7 @@ dependencies {
     //picasso image
     implementation 'com.squareup.picasso:picasso:2.3.2'
 
+    //image piker
+    implementation 'com.github.nguyenhoanglam:ImagePicker:1.4.3'
+
 }

@@ -65,12 +65,9 @@ Profile profile;
         acountViewModell.getProfileData(this);
         acountViewModell.getProfileLiveData().observe(this, profile -> {
             if (profile == null ){
-                Log.e("getProfileLiveData", null );
                 return;
             }else {
                 this.profile = profile;
-                Log.e("getProfileLiveData",profile.getEmail() );
-               // Log.e("getProfileLiveData", getProfileList.get(0).getImageViewUri().toString() );
                 setUpProfileData();
             }
         });
@@ -81,25 +78,12 @@ Profile profile;
     }
 
     private void setUpUi() {
-
-//        binding.btnChoose.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                utils.chooseImageFromGallery(EditProfile.this);
-//            }
-//        });
         binding.imgProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 utils.chooseImageFromGallery(EditProfile.this);
             }
         });
-//        binding.btnUpload.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//               acountViewModell.uploadImage(EditProfile.this , filePath);
-//            }
-//        });
         binding.updateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -108,7 +92,7 @@ Profile profile;
         });
     }
     private void signup() {
-
+        if (isFormHasError())return;
         profile.setEmail(binding.userEmail.getText().toString());
         profile.setPassword(binding.userPassword.getText().toString());
         profile.setPhoneNum(binding.phone.getText().toString());
@@ -125,7 +109,24 @@ Profile profile;
         binding.phone.setText(profile.getPhoneNum());
     }
 
-
+    private boolean isFormHasError() {
+        String phoneNum,userName;
+        boolean isFormHasError = false;
+        phoneNum = binding.phone.getText().toString();
+        userName = binding.name.getText().toString();
+       if (TextUtils.isEmpty(phoneNum)){
+            binding.phone.setError("please enter your phone" );
+            binding.phone.requestFocus();
+            binding.phone.setBackgroundResource(R.drawable.focus);
+            return   isFormHasError = true ;
+        } if (TextUtils.isEmpty(userName)){
+            binding.name.setError("please enter your userName" );
+            binding.name.requestFocus();
+            binding.name.setBackgroundResource(R.drawable.focus);
+            return   isFormHasError = true ;
+        }
+        return isFormHasError;
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

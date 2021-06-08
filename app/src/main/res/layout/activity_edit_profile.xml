@@ -97,7 +97,8 @@
             android:layout_margin="5dp"
             android:drawablePadding="@dimen/_10sdp"
             android:hint="enter your phone"
-            android:drawableLeft="@drawable/phone" />
+            android:drawableLeft="@drawable/phone"
+            android:inputType="number"/>
 
         <TextView
             android:layout_width="146dp"

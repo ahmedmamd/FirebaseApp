@@ -1,8 +1,22 @@
 package com.example.firebaseapp.modell;
 
+import android.net.Uri;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class Post {
 
     String id,details,userId,userName ,imageUri;
+     List<String> uriImage = new ArrayList<>();
+
+    public List<String> getUriImage() {
+        return uriImage;
+    }
+
+    public void setUriImage(List<String> uriImage) {
+        this.uriImage = uriImage;
+    }
 
     public String getImageUri() {
         return imageUri;

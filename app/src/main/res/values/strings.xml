@@ -20,4 +20,5 @@
     <string name="action_settings">setting</string>
     <string name="Logout">Logout</string>
     <string name="updateButton">UPDATE</string>
+    <string name="register_page">Register Page</string>
 </resources>

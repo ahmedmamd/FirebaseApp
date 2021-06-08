@@ -80,9 +80,15 @@ public class SignUp extends AppCompatActivity {
             acountViewModell.createUserProfile(this, profile,filePath);
         });
         acountViewModell.observeCreationProfile().observe(this, resultMessage -> {
-            if (!TextUtils.isEmpty(resultMessage))
+            if (!TextUtils.isEmpty(resultMessage)){
                 Toast.makeText(this, resultMessage, Toast.LENGTH_SHORT).show();
-                navToDataActivity();
+                if (resultMessage=="User Creation Successfully"){
+                    navToDataActivity();
+                }
+            }
+
+
+
         });
     }
 
@@ -97,25 +103,25 @@ public class SignUp extends AppCompatActivity {
         password = binding.userPassword.getText().toString();
         phoneNum = binding.phone.getText().toString();
         userName = binding.name.getText().toString();
-        if (TextUtils.isEmpty(email)){
-            binding.userEmail.setError("please enter your post" );
+        if (TextUtils.isEmpty(userName)){
+            binding.name.setError("please enter your userName" );
+            binding.name.requestFocus();
+            binding.name.setBackgroundResource(R.drawable.focus);
+            return   isFormHasError = true ;
+        } if (TextUtils.isEmpty(email)){
+            binding.userEmail.setError("please enter your email");
             binding.userEmail.requestFocus();
-            binding.userEmail.setBackgroundResource(R.drawable.bordercolor);
+            binding.userEmail.setBackgroundResource(R.drawable.focus);
             return   isFormHasError = true ;
         } if (TextUtils.isEmpty(password)){
-            binding.userPassword.setError("please enter your post" );
+            binding.userPassword.setError("please enter your password" );
             binding.userPassword.requestFocus();
-            binding.userPassword.setBackgroundResource(R.drawable.bordercolor);
+            binding.userPassword.setBackgroundResource(R.drawable.focus);
             return   isFormHasError = true ;
         } if (TextUtils.isEmpty(phoneNum)){
-            binding.phone.setError("please enter your post" );
+            binding.phone.setError("please enter your phone number" );
             binding.phone.requestFocus();
-            binding.phone.setBackgroundResource(R.drawable.bordercolor);
-            return   isFormHasError = true ;
-        } if (TextUtils.isEmpty(userName)){
-            binding.name.setError("please enter your post" );
-            binding.name.requestFocus();
-            binding.name.setBackgroundResource(R.drawable.bordercolor);
+            binding.phone.setBackgroundResource(R.drawable.focus);
             return   isFormHasError = true ;
         }
         return isFormHasError;

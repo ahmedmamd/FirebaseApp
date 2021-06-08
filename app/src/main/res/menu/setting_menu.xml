@@ -13,6 +13,10 @@
         android:title="@string/action_settings"
         app:showAsAction="never"/>
     <item
+        android:id="@+id/addList"
+        android:title="addList"
+        app:showAsAction="never"/>
+    <item
         android:id="@+id/logout"
         android:title="@string/Logout"
         app:showAsAction="never"/>
