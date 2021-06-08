@@ -58,10 +58,10 @@ public class Data extends AppCompatActivity {
            }
         });
         acountViewModell.getPostsLiveData().observe(this , posts -> {
-            if (posts == null || posts.isEmpty()){
-              postList.clear();
-              postsAdapter.notifyDataSetChanged();
-              return;
+            if (posts == null || posts.isEmpty()) {
+                postList.clear();
+                postsAdapter.notifyDataSetChanged();
+                return;
             }
             postList.clear();
             postList.addAll(posts);
