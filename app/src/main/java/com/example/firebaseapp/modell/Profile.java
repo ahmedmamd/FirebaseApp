@@ -3,12 +3,21 @@ package com.example.firebaseapp.modell;
 import android.net.Uri;
 
 public  class Profile {
+    String userVideo;
     String id;
     String userName ;
     String email ;
     String password ;
     String phoneNum ;
     String userImage ;
+
+    public String  getUserVideo() {
+        return userVideo;
+    }
+
+    public void setUserVideo(String userVideo) {
+        this.userVideo = userVideo;
+    }
 
     public String getUserImage() {
         return userImage;

@@ -17,13 +17,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/addList"
-            android:text="ADD IMAGES" />
+            android:text="ADD VIDEO" />
 
-        <ImageView
+        <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/imgView"
-            />
+            android:id="@+id/playVideo"
+            android:text="playVideo"/>
+        <VideoView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/videoShow"
+            android:layout_margin="@dimen/_5sdp"/>
+
+
 
     </LinearLayout>
 </layout>

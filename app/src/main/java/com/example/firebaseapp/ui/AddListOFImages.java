@@ -21,9 +21,10 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 public class AddListOFImages extends AppCompatActivity {
-    AcountViewModell acountViewModell = new AcountViewModell();
-    Utils utils;
- ActivityAddListOFImagesBinding binding ;
+    private static final int PICK_IMAGE_REQUEST =72 ;
+     AcountViewModell acountViewModell = new AcountViewModell();
+     Utils utils;
+     ActivityAddListOFImagesBinding binding ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,22 +35,21 @@ public class AddListOFImages extends AppCompatActivity {
     private void setUPUi() {
         utils =new Utils();
         binding.addList.setOnClickListener(v -> {
-            utils.addListOfImages(this);
+            utils.chooseVideoFromGallery(this);
         });
+         binding.playVideo.setOnClickListener(v -> {
+             binding.videoShow.setVideoURI(acountViewModell.getUserVideo(this));
+             binding.videoShow.start();
+         });
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (ImagePicker.shouldHandleResult(requestCode,resultCode ,data,100)){
-            ArrayList<Image> images = ImagePicker.getImages(data);
-
-           // Log.e("onActivityResult", images.get(3).component4());
-            Log.e("onActivityResult", images.toString());
-            for (int path=0 ;path< images.size(); path++){
-                 acountViewModell.uploadMultiImage(this , images.get(path).component3());
-              //  Picasso.with(this).load(image.getUri()).into(binding.imgView);
-            }
+        if(requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
+                && data != null && data.getData() != null )
+        {
+            acountViewModell.uploadVideo(AddListOFImages.this,data.getData());
         }
     }
 }

@@ -21,6 +21,7 @@ import static androidx.core.app.ActivityCompat.startActivityForResult;
 
 public class Utils {
     private final int PICK_IMAGE_REQUEST = 71;
+    private final int PICK_video_REQUEST = 72;
 
     //choose image from gallery
     public void chooseImageFromGallery(Context context) {
@@ -28,6 +29,12 @@ public class Utils {
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult((Activity) context,Intent.createChooser(intent,"Select Picture"),PICK_IMAGE_REQUEST, Bundle.EMPTY);
+    }
+    public void chooseVideoFromGallery(Context context) {
+        Intent intent = new Intent();
+        intent.setType("video/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult((Activity) context,Intent.createChooser(intent,"Select Picture"),PICK_video_REQUEST, Bundle.EMPTY);
     }
 // binding imageview
     @BindingAdapter("imageBinding")

@@ -94,7 +94,14 @@
 
             </LinearLayout>
 
+            <com.google.android.gms.common.SignInButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textDirection="ltr"
+                android:id="@+id/signInWithGoogle"/>
+
         </LinearLayout>
+
 
     </LinearLayout>
 </layout>

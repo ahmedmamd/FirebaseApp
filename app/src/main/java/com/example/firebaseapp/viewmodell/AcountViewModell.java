@@ -11,9 +11,14 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.firebaseapp.R;
 import com.example.firebaseapp.base.BaseViewModell;
 import com.example.firebaseapp.modell.Post;
 import com.example.firebaseapp.modell.Profile;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -33,11 +38,12 @@ import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
 
+
 public class AcountViewModell extends BaseViewModell {
 
     FirebaseStorage storage;
     StorageReference storageReference;
-
+    Uri uriVideo;
     private final int PICK_IMAGE_REQUEST = 71;
     Post post;
     Profile profile ;
@@ -47,6 +53,11 @@ public class AcountViewModell extends BaseViewModell {
     public MutableLiveData<List> getPostsMutableLiveData = new MutableLiveData<>();
     public LiveData<List> getPostsLiveData() {
         return getPostsMutableLiveData;
+    }
+
+    public MutableLiveData<GoogleSignInClient> getGoogleSignInClientMutableLiveData = new MutableLiveData<>();
+    public LiveData<GoogleSignInClient> getGoogleSignInClientLiveData() {
+        return getGoogleSignInClientMutableLiveData;
     }
 
     public MutableLiveData<String> addImagesMutableLiveData = new MutableLiveData<>();
@@ -347,5 +358,87 @@ public class AcountViewModell extends BaseViewModell {
         }
     }
 
+    public void uploadVideo(Context context ,Uri filePath ) {
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference();
+        if(filePath != null)
+        {
+            final ProgressDialog progressDialog = new ProgressDialog(context);
+            progressDialog.setTitle("Uploading...");
+            progressDialog.show();
+
+            StorageReference ref = storageReference.child("Video").child(""+System.currentTimeMillis());
+            ref.putFile(filePath).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
+                    progressDialog.dismiss();
+                    Log.e("upload ", "success" );
+                    // Continue with the task to get the download URL
+                    return ref.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task){
+                    if (task.isSuccessful()) {
+                        Uri downloadUri = task.getResult();
+                        videoUrl(context , downloadUri.toString());
+                        Log.e("downloadUri", downloadUri.toString());
+                    } else {
+                        Log.e("getDownloadUrl", "failed to get Url" );
+                    }
+                }
+            });
+        }
+    }
+
+    public void videoUrl(Context context ,String uri){
+        SharedPreferences prefs = context.getSharedPreferences("MyUID",MODE_PRIVATE);
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(prefs.getString("userId","")).child("userVideo");
+        databaseReference.setValue(uri).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()){
+                    Log.e("add video", "success ");
+                }else{
+                    Log.e("add video", "failed");
+                }
+            }
+        });
 }
+//get the uri for video
+     public Uri getUserVideo(Context context){
+        SharedPreferences prefs = context.getSharedPreferences("MyUID",MODE_PRIVATE);
+        profile =new Profile();
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(prefs.getString("userId",""));
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                profile = snapshot.getValue(Profile.class);
+                uriVideo = Uri.parse(profile.getUserVideo());
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        return uriVideo;
+    }
+// google signIn
+        public void signInWithGoogle(Context context){
+            mAuth =FirebaseAuth.getInstance();
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(context.getString(R.string.default_web_client_id))
+                    .requestServerAuthCode(context.getString(R.string.default_web_client_id))
+                    .requestId()
+                    .requestEmail()
+                    .build();
+            GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(context, gso);
+            getGoogleSignInClientMutableLiveData.setValue(mGoogleSignInClient);
+
+        }
+}
+
 
