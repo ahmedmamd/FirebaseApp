@@ -88,7 +88,7 @@
                     android:padding="5dp"
                     android:layout_marginTop="10dp"
                     android:text="@string/signUp"
-
+                    android:background="@color/test"
                     />
 
 
@@ -99,6 +99,18 @@
                 android:layout_height="wrap_content"
                 android:textDirection="ltr"
                 android:id="@+id/signInWithGoogle"/>
+
+
+
+
+            <com.facebook.login.widget.LoginButton
+                android:id="@+id/login_facebooke"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="30dp"
+                android:text="facebooke"/>
 
         </LinearLayout>
 

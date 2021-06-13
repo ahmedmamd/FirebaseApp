@@ -1,6 +1,11 @@
 <resources>
+    <string name="facebook_app_id">168086718525699</string>
+    <string name="fb_login_protocol_scheme">fb168086718525699</string>
+
     <string name="app_name">FirebaseApp</string>
+
     <string name="api_key">AIzaSyD5-HJz3PsGIJ2vlAByyTAVlYBouWG18yg</string>
+
     <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>

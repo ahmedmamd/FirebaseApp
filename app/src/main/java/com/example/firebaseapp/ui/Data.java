@@ -1,6 +1,5 @@
 package com.example.firebaseapp.ui;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
@@ -8,11 +7,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -24,7 +21,12 @@ import com.example.firebaseapp.adapter.PostsAdapter;
 import com.example.firebaseapp.databinding.ActivityDataBinding;
 import com.example.firebaseapp.modell.Post;
 import com.example.firebaseapp.viewmodell.AcountViewModell;
-import com.google.android.gms.tasks.Task;
+import com.facebook.login.LoginManager;
+
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInApi;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.nguyenhoanglam.imagepicker.model.Image;
 import com.nguyenhoanglam.imagepicker.ui.imagepicker.ImagePicker;
@@ -87,9 +89,9 @@ public class Data extends AppCompatActivity {
                  }
                  else if(item.getItemId()== R.id.action_settings)
                  {
-                  Toast.makeText(Data.this ,"no stting here ",Toast.LENGTH_SHORT).show();
+                  Toast.makeText(Data.this ,"no setting here ",Toast.LENGTH_SHORT).show();
                  }else if (item.getItemId()==R.id.logout){
-                    signout();
+                    signOut();
                  }else if (item.getItemId()==R.id.addList){
                      startActivity(new Intent(Data.this , AddListOFImages.class));
                  }
@@ -110,9 +112,14 @@ public class Data extends AppCompatActivity {
         });
     }
 
-    private void signout() {
+    private void signOut() {
              FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-             firebaseAuth.signOut();
+            GoogleSignIn.getClient(this,
+                    new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build()
+            ).signOut();
+            LoginManager.getInstance().logOut();
+            firebaseAuth.signOut();
+            acountViewModell.googleSignOut(this);
         if (firebaseAuth.getCurrentUser() == null){
              startActivity(new Intent(Data.this , MainActivity.class));
              Toast.makeText(this , "logout complete",Toast.LENGTH_SHORT).show();

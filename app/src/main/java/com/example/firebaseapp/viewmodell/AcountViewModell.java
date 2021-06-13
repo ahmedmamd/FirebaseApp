@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -15,6 +16,8 @@ import com.example.firebaseapp.R;
 import com.example.firebaseapp.base.BaseViewModell;
 import com.example.firebaseapp.modell.Post;
 import com.example.firebaseapp.modell.Profile;
+import com.example.firebaseapp.ui.MainActivity;
+import com.facebook.AccessToken;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -22,8 +25,12 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -49,6 +56,12 @@ public class AcountViewModell extends BaseViewModell {
     Profile profile ;
     private FirebaseAuth mAuth;
     DatabaseReference databaseReference;
+    GoogleSignInClient mGoogleSignInClient;
+
+    public MutableLiveData<FirebaseUser> getFirebaseUserMutableLiveData = new MutableLiveData<>();
+    public LiveData<FirebaseUser> getFirebaseUserLiveData() {
+        return getFirebaseUserMutableLiveData;
+    }
 
     public MutableLiveData<List> getPostsMutableLiveData = new MutableLiveData<>();
     public LiveData<List> getPostsLiveData() {
@@ -201,7 +214,7 @@ public class AcountViewModell extends BaseViewModell {
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                postsList.clear();
+                    postsList.clear();
                 for (DataSnapshot postSnapshot: snapshot.getChildren()) {
                     post = postSnapshot.getValue(Post.class);
                     postsList.add(post);
@@ -435,10 +448,70 @@ public class AcountViewModell extends BaseViewModell {
                     .requestId()
                     .requestEmail()
                     .build();
-            GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(context, gso);
+
+            mGoogleSignInClient = GoogleSignIn.getClient(context, gso);
+
             getGoogleSignInClientMutableLiveData.setValue(mGoogleSignInClient);
 
         }
+       public void googleSignOut(Context context){
+
+        }
+// oauth with google
+    public void firebaseAuthWithGoogle(Context context,String idToken) {
+        profile = new Profile();
+        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener((Activity) context, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            profile.setEmail(task.getResult().getUser().getEmail());
+                            profile.setPhoneNum(task.getResult().getUser().getPhoneNumber());
+                            profile.setId(task.getResult().getUser().getUid());
+                            profile.setUserImage(task.getResult().getUser().getPhotoUrl().toString());
+                            profile.setUserName(task.getResult().getUser().getDisplayName());
+                            createUserProfile(context , profile ,null);
+                            Log.d("", "signInWithCredential:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            signInLivaData.setValue("signIn success");
+                           // updateUI(user);
+                        } else {
+                            signInLivaData.postValue("signIn failed");
+                            // If sign in fails, display a message to the user.
+//                            Log.w(TAG, "signInWithCredential:failure", task.getException());
+//                            updateUI(null);
+                        }
+                    }
+                });
+    }
+//oauth with facebook
+    public void handleFacebookAccessToken(Context context,AccessToken token) {
+        profile = new Profile();
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener((Activity) context , new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+//                            profile.setEmail(task.getResult().getUser().getEmail());
+//                            profile.setPhoneNum(task.getResult().getUser().getPhoneNumber());
+//                            profile.setId(task.getResult().getUser().getUid());
+//                            profile.setUserImage(task.getResult().getUser().getPhotoUrl().toString());
+//                            profile.setUserName(task.getResult().getUser().getDisplayName());
+//                            createUserProfile(context , profile ,null);
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.e("firebaseAuthFacebboce", "signInWithCredential:success");
+                            signInLivaData.setValue("signIn success");
+                        } else {
+                            signInLivaData.postValue("signIn failed");
+                            // If sign in fails, display a message to the user.
+                            Log.e("firebaseAuthFacebboce", "signInWithCredential:failure", task.getException());
+
+                        }
+                    }
+                });
+    }
 }
 
 
